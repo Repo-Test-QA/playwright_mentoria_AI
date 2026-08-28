@@ -1,28 +1,41 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { InventoryPage } from '../pages/InventoryPage';
-import { CartPage } from '../pages/CartPage';
-import { CheckoutStepOnePage } from '../pages/CheckoutStepOnePage';
-import { CheckoutStepTwoPage } from '../pages/CheckoutStepTwoPage';
-import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
+// ============================================================================
+// ⚠️ [DEPRECADO - MODO ANTERIOR]:
+// import { test, expect } from '@playwright/test';
+// import { LoginPage } from '../pages/LoginPage';
+// import { InventoryPage } from '../pages/InventoryPage';
+// import { CartPage } from '../pages/CartPage';
+// import { CheckoutStepOnePage } from '../pages/CheckoutStepOnePage';
+// import { CheckoutStepTwoPage } from '../pages/CheckoutStepTwoPage';
+// import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
+// ============================================================================
+// ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Importación desde utils/fixture
+import { test, expect } from '../utils/fixture';
 
 test.describe('Módulo de Proceso de Checkout y Compra', () => {
-  let inventoryPage: InventoryPage;
-  let cartPage: CartPage;
-  let stepOnePage: CheckoutStepOnePage;
-  let stepTwoPage: CheckoutStepTwoPage;
-  let completePage: CheckoutCompletePage;
 
-  test.beforeEach(async ({ page }) => {
-    const loginPage = new LoginPage(page);
+  // ============================================================================
+  // ⚠️ [DEPRECADO - MODO ANTERIOR]: Instanciación manual de 5 clases en beforeEach
+  // let inventoryPage: InventoryPage;
+  // let cartPage: CartPage;
+  // let stepOnePage: CheckoutStepOnePage;
+  // let stepTwoPage: CheckoutStepTwoPage;
+  // let completePage: CheckoutCompletePage;
+  // test.beforeEach(async ({ page }) => {
+  //   const loginPage = new LoginPage(page);
+  //   await loginPage.goto();
+  //   await loginPage.login('standard_user', 'secret_sauce');
+  //   inventoryPage = new InventoryPage(page);
+  //   cartPage = new CartPage(page);
+  //   stepOnePage = new CheckoutStepOnePage(page);
+  //   stepTwoPage = new CheckoutStepTwoPage(page);
+  //   completePage = new CheckoutCompletePage(page);
+  //   ...
+  // });
+  // ============================================================================
+  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage, inventoryPage, cartPage
+  test.beforeEach(async ({ loginPage, inventoryPage, cartPage }) => {
     await loginPage.goto();
     await loginPage.login('standard_user', 'secret_sauce');
-
-    inventoryPage = new InventoryPage(page);
-    cartPage = new CartPage(page);
-    stepOnePage = new CheckoutStepOnePage(page);
-    stepTwoPage = new CheckoutStepTwoPage(page);
-    completePage = new CheckoutCompletePage(page);
 
     // Precondición: Agregar 2 productos e ir a Checkout Paso 1
     await inventoryPage.addItemToCartBySlug('sauce-labs-backpack');
@@ -31,7 +44,12 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     await cartPage.proceedToCheckout();
   });
 
-  test('TC-CHK-01: Validación de campos obligatorios en Checkout Paso 1', async () => {
+  // ============================================================================
+  // ⚠️ [DEPRECADO - MODO ANTERIOR]:
+  // test('TC-CHK-01', async () => { await stepOnePage.continue(); ... });
+  // ============================================================================
+  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección limpia de stepOnePage
+  test('TC-CHK-01: Validación de campos obligatorios en Checkout Paso 1', async ({ stepOnePage }) => {
     // Submit empty
     await stepOnePage.continue();
     let errorText = await stepOnePage.getErrorMessageText();
@@ -50,12 +68,12 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     expect(errorText).toContain('Error: Postal Code is required');
   });
 
-  test('TC-CHK-02: Cancelación del proceso en Checkout Paso 1', async ({ page }) => {
+  test('TC-CHK-02: Cancelación del proceso en Checkout Paso 1', async ({ stepOnePage, page }) => {
     await stepOnePage.cancel();
     await expect(page).toHaveURL('https://www.saucedemo.com/cart.html');
   });
 
-  test('TC-CHK-03: Resumen financiero y totales en Paso 2', async ({ page }) => {
+  test('TC-CHK-03: Resumen financiero y totales en Paso 2', async ({ stepOnePage, stepTwoPage, page }) => {
     await stepOnePage.fillInformation('QA', 'Tester', '11111');
     await stepOnePage.continue();
 
@@ -71,7 +89,7 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     expect(total).toBeCloseTo(43.18, 2);
   });
 
-  test('TC-CHK-04: Cancelación del proceso en Checkout Paso 2', async ({ page }) => {
+  test('TC-CHK-04: Cancelación del proceso en Checkout Paso 2', async ({ stepOnePage, stepTwoPage, page }) => {
     await stepOnePage.fillInformation('QA', 'Tester', '15001');
     await stepOnePage.continue();
 
@@ -79,7 +97,7 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
   });
 
-  test('TC-CHK-05: Finalización exitosa de la compra en Paso 3', async ({ page }) => {
+  test('TC-CHK-05: Finalización exitosa de la compra en Paso 3', async ({ stepOnePage, stepTwoPage, completePage, page }) => {
     await stepOnePage.fillInformation('QA', 'Tester', '15001');
     await stepOnePage.continue();
 
