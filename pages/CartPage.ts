@@ -16,6 +16,7 @@ export class CartPage {
   }
 
   async getCartItemCount(): Promise<number> {
+    await this.cartItems.first().waitFor({ timeout: 3000 }).catch(() => {});
     return await this.cartItems.count();
   }
 

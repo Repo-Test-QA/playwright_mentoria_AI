@@ -22,10 +22,18 @@ test.describe('Módulo de Carrito de Compras', () => {
   //   cartPage = new CartPage(page);
   // });
   // ============================================================================
-  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage en beforeEach
-  test.beforeEach(async ({ loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login('standard_user', 'secret_sauce');
+  // ⚠️ [DEPRECADO - LOGIN MANUAL CON VARIABLES DE ENTORNO EN BEFOREEACH]:
+  // test.beforeEach(async ({ loginPage }) => {
+  //   await loginPage.goto();
+  //   await loginPage.login(
+  //     process.env.STANDARD_USER ?? 'standard_user',
+  //     process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+  //   );
+  // });
+  // ============================================================================
+  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Autenticación automática mediante la fixture loggedInPage
+  test.beforeEach(async ({ loggedInPage }) => {
+    // loggedInPage ejecuta la navegación e inicio de sesión centralizado
   });
 
   // ============================================================================
@@ -75,7 +83,7 @@ test.describe('Módulo de Carrito de Compras', () => {
     await inventoryPage.goToCart();
     await cartPage.continueShopping();
 
-    await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
+    await expect(page).toHaveURL(/.*inventory\.html/);
     expect(await inventoryPage.getCartBadgeCount()).toBe('1');
   });
 
@@ -84,6 +92,6 @@ test.describe('Módulo de Carrito de Compras', () => {
     await inventoryPage.goToCart();
     await cartPage.proceedToCheckout();
 
-    await expect(page).toHaveURL('https://www.saucedemo.com/checkout-step-one.html');
+    await expect(page).toHaveURL(/.*checkout-step-one\.html/);
   });
 });
