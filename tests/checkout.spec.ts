@@ -32,15 +32,25 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
   //   ...
   // });
   // ============================================================================
-  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage, inventoryPage, cartPage
-  test.beforeEach(async ({ loginPage, inventoryPage, cartPage }) => {
-    await loginPage.goto();
-    await loginPage.login('standard_user', 'secret_sauce');
-
+  // ⚠️ [DEPRECADO - LOGIN MANUAL CON VARIABLES DE ENTORNO EN BEFOREEACH]:
+  // test.beforeEach(async ({ loginPage, inventoryPage, cartPage }) => {
+  //   await loginPage.goto();
+  //   await loginPage.login(
+  //     process.env.STANDARD_USER ?? 'standard_user',
+  //     process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+  //   );
+  //   await inventoryPage.addItemToCartBySlug('sauce-labs-backpack');
+  //   await inventoryPage.addItemToCartBySlug('sauce-labs-bike-light');
+  //   await inventoryPage.goToCart();
+  //   await cartPage.proceedToCheckout();
+  // });
+  // ============================================================================
+  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección de loggedInPage y cartPage
+  test.beforeEach(async ({ loggedInPage, cartPage }) => {
     // Precondición: Agregar 2 productos e ir a Checkout Paso 1
-    await inventoryPage.addItemToCartBySlug('sauce-labs-backpack');
-    await inventoryPage.addItemToCartBySlug('sauce-labs-bike-light');
-    await inventoryPage.goToCart();
+    await loggedInPage.addItemToCartBySlug('sauce-labs-backpack');
+    await loggedInPage.addItemToCartBySlug('sauce-labs-bike-light');
+    await loggedInPage.goToCart();
     await cartPage.proceedToCheckout();
   });
 
@@ -70,14 +80,14 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
 
   test('TC-CHK-02: Cancelación del proceso en Checkout Paso 1', async ({ stepOnePage, page }) => {
     await stepOnePage.cancel();
-    await expect(page).toHaveURL('https://www.saucedemo.com/cart.html');
+    await expect(page).toHaveURL(/.*cart\.html/);
   });
 
   test('TC-CHK-03: Resumen financiero y totales en Paso 2', async ({ stepOnePage, stepTwoPage, page }) => {
     await stepOnePage.fillInformation('QA', 'Tester', '11111');
     await stepOnePage.continue();
 
-    await expect(page).toHaveURL('https://www.saucedemo.com/checkout-step-two.html');
+    await expect(page).toHaveURL(/.*checkout-step-two\.html/);
 
     const subtotal = await stepTwoPage.getSubtotal();
     const tax = await stepTwoPage.getTax();
@@ -94,7 +104,7 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     await stepOnePage.continue();
 
     await stepTwoPage.cancel();
-    await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
+    await expect(page).toHaveURL(/.*inventory\.html/);
   });
 
   test('TC-CHK-05: Finalización exitosa de la compra en Paso 3', async ({ stepOnePage, stepTwoPage, completePage, page }) => {
@@ -102,7 +112,7 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     await stepOnePage.continue();
 
     await stepTwoPage.finish();
-    await expect(page).toHaveURL('https://www.saucedemo.com/checkout-complete.html');
+    await expect(page).toHaveURL(/.*checkout-complete\.html/);
 
     const header = await completePage.getCompleteHeader();
     const text = await completePage.getCompleteText();
@@ -111,6 +121,6 @@ test.describe('Módulo de Proceso de Checkout y Compra', () => {
     expect(text).toContain('Your order has been dispatched');
 
     await completePage.backHome();
-    await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
+    await expect(page).toHaveURL(/.*inventory\.html/);
   });
 });

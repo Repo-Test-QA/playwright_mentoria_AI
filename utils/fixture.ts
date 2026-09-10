@@ -16,6 +16,7 @@ type MyPageFixtures = {
   stepOnePage: CheckoutStepOnePage;
   stepTwoPage: CheckoutStepTwoPage;
   completePage: CheckoutCompletePage;
+  loggedInPage: InventoryPage;
 };
 
 // Extendemos la funcionalidad base de 'test' de Playwright para inyectar los Page Objects
@@ -40,6 +41,17 @@ export const test = base.extend<MyPageFixtures>({
   },
   completePage: async ({ page }, use) => {
     await use(new CheckoutCompletePage(page));
+  },
+  loggedInPage: async ({ loginPage, inventoryPage, page }, use) => {
+    await loginPage.goto();
+    await loginPage.login(
+      process.env.STANDARD_USER ?? 'standard_user',
+      process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+    );
+    // Esperar a que la página de inventario y los productos carguen tras el login
+    await page.waitForURL(/.*inventory\.html/);
+    await inventoryPage.inventoryItems.first().waitFor();
+    await use(inventoryPage);
   },
 });
 

@@ -67,5 +67,6 @@ export class InventoryPage {
 
   async goToCart(): Promise<void> {
     await this.shoppingCartLink.click();
+    await this.page.waitForURL(/.*cart\.html/);
   }
 }

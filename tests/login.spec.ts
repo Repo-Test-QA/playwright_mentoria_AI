@@ -33,8 +33,11 @@ test.describe('Módulo de Autenticación (Login)', () => {
   // ============================================================================
   // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage e inventoryPage
   test('TC-LOG-01: Login exitoso con credenciales válidas', async ({ loginPage, inventoryPage, page }) => {
-    await loginPage.login('standard_user', 'secret_sauce');
-    await expect(page).toHaveURL('https://www.saucedemo.com/inventory.html');
+    await loginPage.login(
+      process.env.STANDARD_USER ?? 'standard_user',
+      process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+    );
+    await expect(page).toHaveURL(/.*inventory\.html/);
     await expect(inventoryPage.title).toHaveText('Products');
   });
 
@@ -48,9 +51,12 @@ test.describe('Módulo de Autenticación (Login)', () => {
   // ============================================================================
   // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección de loginPage como parámetro
   test('TC-LOG-03: Login fallido con credenciales inválidas', async ({ loginPage, page }) => {
-    await loginPage.login('invalid_user', 'wrong_password');
+    await loginPage.login(
+      process.env.INVALID_USER ?? 'invalid_user',
+      process.env.INVALID_PASSWORD ?? 'wrong_password'
+    );
     await expect(loginPage.errorMessage).toContainText('Username and password do not match any user in this service');
-    await expect(page).toHaveURL('https://www.saucedemo.com/');
+    await expect(page).toHaveURL(/.*saucedemo\.com\/?$/);
   });
 
 });

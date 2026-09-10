@@ -20,10 +20,18 @@ test.describe('Módulo de Catálogo e Inventario', () => {
   //   inventoryPage = new InventoryPage(page);
   // });
   // ============================================================================
-  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage en beforeEach
-  test.beforeEach(async ({ loginPage }) => {
-    await loginPage.goto();
-    await loginPage.login('standard_user', 'secret_sauce');
+  // ⚠️ [DEPRECADO - LOGIN MANUAL CON VARIABLES DE ENTORNO EN BEFOREEACH]:
+  // test.beforeEach(async ({ loginPage }) => {
+  //   await loginPage.goto();
+  //   await loginPage.login(
+  //     process.env.STANDARD_USER ?? 'standard_user',
+  //     process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+  //   );
+  // });
+  // ============================================================================
+  // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Autenticación automática mediante la fixture loggedInPage
+  test.beforeEach(async ({ loggedInPage }) => {
+    // loggedInPage ejecuta la navegación e inicio de sesión centralizado
   });
 
   // ============================================================================
