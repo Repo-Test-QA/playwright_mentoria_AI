@@ -4,8 +4,12 @@
 // import { LoginPage } from '../pages/LoginPage';
 // import { InventoryPage } from '../pages/InventoryPage';
 // ============================================================================
-// ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Importamos 'test' y 'expect' desde utils/fixture
-import { test, expect } from '../utils/fixture';
+// ============================================================================
+// ⚠️ [DEPRECADO - RUTA RELATIVA]:
+// import { test, expect } from '../utils/fixture';
+// ============================================================================
+// ✅ [ACTUALIZADO - ALIAS DE RUTAS]: Importación usando alias @utils
+import { test, expect } from '@utils/fixture';
 
 test.describe('Módulo de Autenticación (Login)', () => {
 
@@ -34,8 +38,8 @@ test.describe('Módulo de Autenticación (Login)', () => {
   // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección directa de loginPage e inventoryPage
   test('TC-LOG-01: Login exitoso con credenciales válidas', async ({ loginPage, inventoryPage, page }) => {
     await loginPage.login(
-      process.env.STANDARD_USER ?? 'standard_user',
-      process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+      process.env.STANDARD_USER!,
+      process.env.STANDARD_PASSWORD!
     );
     await expect(page).toHaveURL(/.*inventory\.html/);
     await expect(inventoryPage.title).toHaveText('Products');
@@ -52,8 +56,8 @@ test.describe('Módulo de Autenticación (Login)', () => {
   // ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Inyección de loginPage como parámetro
   test('TC-LOG-03: Login fallido con credenciales inválidas', async ({ loginPage, page }) => {
     await loginPage.login(
-      process.env.INVALID_USER ?? 'invalid_user',
-      process.env.INVALID_PASSWORD ?? 'wrong_password'
+      process.env.INVALID_USER!,
+      process.env.INVALID_PASSWORD!
     );
     await expect(loginPage.errorMessage).toContainText('Username and password do not match any user in this service');
     await expect(page).toHaveURL(/.*saucedemo\.com\/?$/);
