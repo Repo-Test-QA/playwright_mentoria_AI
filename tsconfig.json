@@ -3,11 +3,27 @@
     "target": "ESNext",
     "module": "commonjs",
     "moduleResolution": "node",
-    "types": ["node", "@playwright/test"],
+    "types": [
+      "node",
+      "@playwright/test"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    // 👇 CONFIGURACIÓN DE ALIAS DE RUTAS
+    "baseUrl": ".",
+    "paths": {
+      "@pages/*": [
+        "pages/*"
+      ],
+      "@utils/*": [
+        "utils/*"
+      ],
+      "@tests/*": [
+        "tests/*"
+      ]
+    }
   },
   "include": [
     "**/*.ts",

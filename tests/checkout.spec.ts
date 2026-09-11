@@ -8,8 +8,12 @@
 // import { CheckoutStepTwoPage } from '../pages/CheckoutStepTwoPage';
 // import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
 // ============================================================================
-// ✅ [ACTUALIZADO - CUSTOM FIXTURES]: Importación desde utils/fixture
-import { test, expect } from '../utils/fixture';
+// ============================================================================
+// ⚠️ [DEPRECADO - RUTA RELATIVA]:
+// import { test, expect } from '../utils/fixture';
+// ============================================================================
+// ✅ [ACTUALIZADO - ALIAS DE RUTAS]: Importación usando alias @utils
+import { test, expect } from '@utils/fixture';
 
 test.describe('Módulo de Proceso de Checkout y Compra', () => {
 

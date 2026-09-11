@@ -1,11 +1,22 @@
 import { test as base, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { InventoryPage } from '../pages/InventoryPage';
-import { ProductDetailPage } from '../pages/ProductDetailPage';
-import { CartPage } from '../pages/CartPage';
-import { CheckoutStepOnePage } from '../pages/CheckoutStepOnePage';
-import { CheckoutStepTwoPage } from '../pages/CheckoutStepTwoPage';
-import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
+// ============================================================================
+// ⚠️ [DEPRECADO - MODO ANTERIOR]: Rutas relativas
+// import { LoginPage } from '../pages/LoginPage';
+// import { InventoryPage } from '../pages/InventoryPage';
+// import { ProductDetailPage } from '../pages/ProductDetailPage';
+// import { CartPage } from '../pages/CartPage';
+// import { CheckoutStepOnePage } from '../pages/CheckoutStepOnePage';
+// import { CheckoutStepTwoPage } from '../pages/CheckoutStepTwoPage';
+// import { CheckoutCompletePage } from '../pages/CheckoutCompletePage';
+// ============================================================================
+// ✅ [ACTUALIZADO - ALIAS DE RUTAS]: Importación directa mediante alias @pages
+import { LoginPage } from '@pages/LoginPage';
+import { InventoryPage } from '@pages/InventoryPage';
+import { ProductDetailPage } from '@pages/ProductDetailPage';
+import { CartPage } from '@pages/CartPage';
+import { CheckoutStepOnePage } from '@pages/CheckoutStepOnePage';
+import { CheckoutStepTwoPage } from '@pages/CheckoutStepTwoPage';
+import { CheckoutCompletePage } from '@pages/CheckoutCompletePage';
 
 // Definición del tipo para todas nuestras fixtures de tipo Page Object
 type MyPageFixtures = {
@@ -45,8 +56,8 @@ export const test = base.extend<MyPageFixtures>({
   loggedInPage: async ({ loginPage, inventoryPage, page }, use) => {
     await loginPage.goto();
     await loginPage.login(
-      process.env.STANDARD_USER ?? 'standard_user',
-      process.env.STANDARD_PASSWORD ?? 'secret_sauce'
+      process.env.STANDARD_USER!,
+      process.env.STANDARD_PASSWORD!
     );
     // Esperar a que la página de inventario y los productos carguen tras el login
     await page.waitForURL(/.*inventory\.html/);
